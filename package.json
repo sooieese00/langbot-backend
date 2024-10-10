@@ -1,0 +1,26 @@
+{
+  "name": "engweb-backend",
+  "version": "1.0.0",
+  "description": "EngWeb 백엔드 서비스: 유튜브 자막 분석 및 음성 생성 API 제공",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.5.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.1.7",
+    "youtube-transcript": "^1.2.1",
+    "youtube-transcript-api": "^1.1.2"
+  }
+}
