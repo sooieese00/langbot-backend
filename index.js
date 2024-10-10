@@ -16,7 +16,7 @@ dotenv.config();
 //connectDB();
 
 const app = express();
-const port = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -44,6 +44,6 @@ const getSubscriptionKey = require('./middleware/azureEnv');
 app.use('/api/azure', azureRoutes);
 app.get('/api/azure/key', getSubscriptionKey);
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
 });
