@@ -1,0 +1,44 @@
+name: Deploy to cloudtype
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Connect deploy key
+        uses: cloudtype-github-actions/connect@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          ghtoken: ${{ secrets.GHP_TOKEN }}
+      - name: Deploy
+        uses: cloudtype-github-actions/deploy@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          project: sooieese/langbot-backend
+          stage: main
+          yaml: |
+            name: langbot-backend
+            app: node@22
+            options:
+              ports: "5000"
+              install: npm install
+              build: ""
+              start: npm start
+              env:
+                - name: PORT
+                  value: "5000"
+                - name: YOUTUBE_API_KEY
+                  secret: YOUTUBE_API_KEY
+                - name: OPENAI_API_KEY
+                  secret: OPENAI_API_KEY
+                - name: AZURE_SUBSCRIPTIONKEY
+                  secret: AZURE_SUBSCRIPTIONKEY
+              buildenv: []
+            context:
+              git:
+                url: git@github.com:${{ github.repository }}.git
+                ref: ${{ github.ref }}
