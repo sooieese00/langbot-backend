@@ -38,7 +38,7 @@ const getChatResponse = async (prompt) => {
 // 학습 표현 가져오기
 router.post('/expressions/:videoId', async (req, res) => {
     const { captions, expressionLevel, expressionNumber } = req.body;
-
+    console.log("학습표현 가져오기 시작")
     try {
         const prompt = `
 현재 나는 부족한 회화 실력을 높이기 위해서 영어 유튜브 영상에서 나온 표현들로 공부하고 있어.
