@@ -100,7 +100,6 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
     const { region, referenceText } = req.body;
     console.log("refereceText확인- routes", referenceText);
     const audioFilePath = req.file.path; // multer가 저장한 파일 경로
-    console.log("1")
     try {
         const pronAssessmentParamsJson = {
             "ReferenceText": referenceText,
@@ -127,9 +126,9 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
             maxContentLength: Infinity,
             maxBodyLength: Infinity
         });
-        console.log("2")
 
         // 응답 처리
+        console.log(response);
         const evaluationResult  = response.data.NBest[0];
         const result = {
             AccuracyScore: evaluationResult.AccuracyScore,
