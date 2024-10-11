@@ -14,7 +14,7 @@ const getChatResponse = async (prompt) => {
         const response = await axios.post(
             BASE_URL_OPENAI,
             {
-                model: "gpt-4",
+                model: "gpt-4o",
                 messages: [{ role: "user", content: prompt }],
                 max_tokens: 4000,
                 n: 1,
@@ -41,7 +41,7 @@ router.post('/expressions/:videoId', async (req, res) => {
     console.log("학습표현 가져오기 시작")
     try {
         const prompt = `
-현재 나는 부족한 회화 실력을 높이기 위해서 영어 유튜브 영상에서 나온 표현들로 공부하고 있어.
+현재 나는 영어 유튜브 영상에서 나온 표현들로 영어를 공부하고 있어.
 너는 나의 영어 회화공부를 도와주는 AI 영어 튜터야.
 내가 공부하고 있는 유튜브 영상의 스크립트를 하단에 보내줄게.
 실생활 활용도가 높은 표현들 중, ${expressionLevel}의 난이도에 해당하는 표현 ${expressionNumber}개를 아래 조건에 맞춰 스크립트에서 뽑아줘.
