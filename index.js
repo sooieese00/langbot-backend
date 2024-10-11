@@ -7,8 +7,13 @@ const openaiRoutes = require('./routes/openaiRoutes');
 const youtubeRoutes = require('./routes/youtubeRoutes')
 //const playhtRoutes = require('./routes/playhtRoutes');
 const azureRoutes = require('./routes/azureRoutes');
-require('dotenv').config();
 
+app.use(cors({
+    origin: 'https://port-0-langbot-frontend-m22m0z85debbab55.sel4.cloudtype.app',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }));
+  
 // 환경 변수 설정
 dotenv.config();
 
@@ -18,7 +23,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+
 app.use(express.json());
 app.use(express.static('public'));
 
