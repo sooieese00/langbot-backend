@@ -100,12 +100,12 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
     const { region, referenceText } = req.body;
     console.log("refereceText확인- routes", referenceText);
     const audioFilePath = req.file.path; // multer가 저장한 파일 경로
+    console.log("1")
     try {
         const pronAssessmentParamsJson = {
             "ReferenceText": referenceText,
             "GradingSystem": "HundredMark",
-            "Dimension": "Comprehensive",
-            "EnableMiscue":true
+            "Dimension": "Comprehensive"
         };
 
         const pronAssessmentParams = Buffer.from(JSON.stringify(pronAssessmentParamsJson), 'utf-8').toString('base64');
@@ -127,6 +127,7 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
             maxContentLength: Infinity,
             maxBodyLength: Infinity
         });
+        console.log("2")
 
         // 응답 처리
         const evaluationResult  = response.data.NBest[0];
@@ -136,6 +137,7 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
             CompletenessScore: evaluationResult.CompletenessScore,
             PronScore: evaluationResult.PronScore
         }
+        console.log("3")
         res.json(result); // 결과를 클라이언트로 전송
 
     } catch (error) {
