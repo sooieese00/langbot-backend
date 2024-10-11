@@ -103,9 +103,7 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
     try {
         const pronAssessmentParamsJson = {
             "ReferenceText": referenceText,
-            "GradingSystem": "HundredMark",
-            "Granularity":"Phoneme",
-            "EnableMiscue":false
+            "GradingSystem": "HundredMark"
         };
 
         const pronAssessmentParams = Buffer.from(JSON.stringify(pronAssessmentParamsJson), 'utf-8').toString('base64');
