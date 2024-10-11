@@ -25,6 +25,7 @@ app.use(cors({
   }));
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // 기본 라우트 설정 예시
