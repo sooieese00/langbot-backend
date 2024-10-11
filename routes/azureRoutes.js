@@ -128,8 +128,8 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
         });
 
         // 응답 처리
-        console.log(response);
         const evaluationResult  = response.data.NBest[0];
+        console.log(evaluationResult);
         const result = {
             AccuracyScore: evaluationResult.AccuracyScore,
             FluencyScore: evaluationResult.FluencyScore,
