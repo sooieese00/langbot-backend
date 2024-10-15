@@ -25,7 +25,10 @@ jobs:
             app: node@22
             options:
               ports: "5000"
-              install: npm install
+              install: |
+                sudo apt-get update
+                sudo apt-get install -y ffmpeg
+                npm install
               build: ""
               start: npm start
               env:
