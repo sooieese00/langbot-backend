@@ -114,13 +114,10 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
     const { region, referenceText } = req.body;
     console.log("referenceText 확인 - routes", referenceText);
     const audioFilePath = req.file.path; // multer가 저장한 파일 경로
-    // 변환된 파일을 저장할 경로를 다르게 지정 (여기서는 동일 디렉토리에 .wav 파일로 변환)
-    const wavFilePath = path.join('uploads', `${path.parse(audioFilePath).name}.wav`);
-
+   
     try {
-        // WebM 파일을 WAV로 변환
-        await convertToWav(audioFilePath, wavFilePath);
-        
+
+
         const pronAssessmentParamsJson = {
             "ReferenceText": referenceText,
             "GradingSystem": "HundredMark",
@@ -128,9 +125,7 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
         };
 
         const pronAssessmentParams = Buffer.from(JSON.stringify(pronAssessmentParamsJson), 'utf-8').toString('base64');
-        
-        const audioStream = fs.createReadStream(wavFilePath);
-
+        const audioStream = fs.createReadStream(audioFilePath);
         // 요청 설정
         const response = await axios({
             method: 'POST',
@@ -162,13 +157,12 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
         console.error('Error in fetching pronunciation assessment:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to fetch pronunciation assessment' });
     } finally {
-        // 업로드된 파일 및 변환된 파일 삭제
-        fs.unlink(audioFilePath, (err) => {
-            if (err) console.error('Failed to delete uploaded WebM file:', err);
-        });
-        fs.unlink(wavFilePath, (err) => {
-            if (err) console.error('Failed to delete converted WAV file:', err);
-        });
+        // 업로드된 WAV 파일 삭제
+        if (fs.existsSync(audioFilePath)) {
+            fs.unlink(audioFilePath, (err) => {
+                if (err) console.error('Failed to delete uploaded WAV file:', err);
+            });
+        }
     }
 });
 
