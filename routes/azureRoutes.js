@@ -10,7 +10,18 @@ const { PassThrough } = require('stream');
 const axios = require('axios');
 const app = express();
 app.use(cors()); 
-
+const ffmpeg = require('fluent-ffmpeg');
+// WebM 파일을 WAV로 변환하는 함수
+// WebM 파일을 WAV로 변환하는 함수
+const convertToWav = (inputPath, outputPath) => {
+    return new Promise((resolve, reject) => {
+        ffmpeg(inputPath)
+            .toFormat('wav')
+            .on('end', () => resolve(outputPath))
+            .on('error', reject)
+            .save(outputPath);
+    });
+};
 const subscriptionKey = process.env.AZURE_SUBSCRIPTIONKEY;
 const region = "southeastasia";
 
@@ -98,9 +109,15 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
     console.log(req.file); // 파일 정보 확인
     const subscriptionKey = process.env.AZURE_SUBSCRIPTIONKEY;
     const { region, referenceText } = req.body;
-    console.log("refereceText확인- routes", referenceText);
+    console.log("referenceText 확인 - routes", referenceText);
     const audioFilePath = req.file.path; // multer가 저장한 파일 경로
+    // 변환된 파일을 저장할 경로를 다르게 지정
+    const wavFilePath = path.join('uploads', `${path.parse(audioFilePath).name}.wav`);
+
     try {
+        // WebM 파일을 WAV로 변환
+        await convertToWav(audioFilePath, wavFilePath);
+        
         const pronAssessmentParamsJson = {
             "ReferenceText": referenceText,
             "GradingSystem": "HundredMark",
@@ -108,9 +125,8 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
         };
 
         const pronAssessmentParams = Buffer.from(JSON.stringify(pronAssessmentParamsJson), 'utf-8').toString('base64');
-
-        // 오디오 파일 읽기
-        const audioStream = fs.createReadStream(audioFilePath);
+        
+        const audioStream = fs.createReadStream(wavFilePath);
 
         // 요청 설정
         const response = await axios({
@@ -136,16 +152,19 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
             CompletenessScore: evaluationResult.CompletenessScore,
             PronScore: evaluationResult.PronScore
         }
-        console.log("3")
+        console.log("3");
         res.json(result); // 결과를 클라이언트로 전송
 
     } catch (error) {
         console.error('Error in fetching pronunciation assessment:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to fetch pronunciation assessment' });
     } finally {
-        // 업로드된 파일 삭제
+        // 업로드된 파일 및 변환된 파일 삭제
         fs.unlink(audioFilePath, (err) => {
-            if (err) console.error('Failed to delete uploaded file:', err);
+            if (err) console.error('Failed to delete uploaded WebM file:', err);
+        });
+        fs.unlink(wavFilePath, (err) => {
+            if (err) console.error('Failed to delete converted WAV file:', err);
         });
     }
 });
