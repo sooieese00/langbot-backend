@@ -10,6 +10,8 @@ const { PassThrough } = require('stream');
 const axios = require('axios');
 const app = express();
 app.use(cors()); 
+
+
 const ffmpeg = require('fluent-ffmpeg');
 // WebM 파일을 WAV로 변환하는 함수
 // WebM 파일을 WAV로 변환하는 함수
@@ -22,6 +24,8 @@ const convertToWav = (inputPath, outputPath) => {
             .save(outputPath);
     });
 };
+
+
 const subscriptionKey = process.env.AZURE_SUBSCRIPTIONKEY;
 const region = "southeastasia";
 
@@ -103,7 +107,6 @@ router.post('/stt', upload.single('audioFile'), async (req, res) => {
     }
 });
 
-
 // 발음 평가
 router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
     console.log(req.file); // 파일 정보 확인
@@ -111,7 +114,7 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
     const { region, referenceText } = req.body;
     console.log("referenceText 확인 - routes", referenceText);
     const audioFilePath = req.file.path; // multer가 저장한 파일 경로
-    // 변환된 파일을 저장할 경로를 다르게 지정
+    // 변환된 파일을 저장할 경로를 다르게 지정 (여기서는 동일 디렉토리에 .wav 파일로 변환)
     const wavFilePath = path.join('uploads', `${path.parse(audioFilePath).name}.wav`);
 
     try {
