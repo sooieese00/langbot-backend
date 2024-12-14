@@ -13,8 +13,7 @@ app.use(cors());
 
 
 const ffmpeg = require('fluent-ffmpeg');
-// WebM 파일을 WAV로 변환하는 함수
-// WebM 파일을 WAV로 변환하는 함수
+// WebM 파일을 WAV로 변환
 const convertToWav = (inputPath, outputPath) => {
     return new Promise((resolve, reject) => {
         ffmpeg(inputPath)
@@ -38,7 +37,6 @@ function textToSpeech(subscriptionKey, region, text) {
         const speechConfig = sdk.SpeechConfig.fromSubscription(subscriptionKey, region);
         const speechSynthesizer = new sdk.SpeechSynthesizer(speechConfig);
 
-        // TTS 변환
         speechSynthesizer.speakTextAsync(
             text,
             result => {
@@ -50,7 +48,7 @@ function textToSpeech(subscriptionKey, region, text) {
                 const bufferStream = new PassThrough();
                 bufferStream.end(Buffer.from(audioData));
 
-                resolve(bufferStream); // 한 번에 변환된 결과를 스트림으로 반환
+                resolve(bufferStream); 
             },
             error => {
                 console.error("TTS 변환 실패:", error);
@@ -72,7 +70,6 @@ router.post('/tts', async (req, res) => {
         res.setHeader('Content-Type', 'audio/mpeg');
         res.setHeader('Content-Disposition', 'attachment; filename="tts_output.mp3"');
 
-        // 완성된 스트림을 클라이언트에 전송
         audioStream.pipe(res);
     } catch (error) {
         console.error("TTS 요청 처리 중 오류:", error);
@@ -80,6 +77,7 @@ router.post('/tts', async (req, res) => {
     }
 });
 
+// STT
 router.post('/stt', upload.single('audioFile'), async (req, res) => {
     try {
         const subscriptionKey = process.env.AZURE_SUBSCRIPTIONKEY;
@@ -89,7 +87,7 @@ router.post('/stt', upload.single('audioFile'), async (req, res) => {
 
         // Speech SDK 설정
         const speechConfig = SpeechConfig.fromSubscription(subscriptionKey, region);
-        const audioConfig = AudioConfig.fromWavFileInput(audioBuffer); // 버퍼 사용
+        const audioConfig = AudioConfig.fromWavFileInput(audioBuffer); 
         const recognizer = new SpeechRecognizer(speechConfig, audioConfig);
 
         // STT 처리
@@ -109,15 +107,13 @@ router.post('/stt', upload.single('audioFile'), async (req, res) => {
 
 // 발음 평가
 router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
-    console.log(req.file); // 파일 정보 확인
+    console.log(req.file);
     const subscriptionKey = process.env.AZURE_SUBSCRIPTIONKEY;
     const { region, referenceText } = req.body;
     console.log("referenceText 확인 - routes", referenceText);
-    const audioFilePath = req.file.path; // multer가 저장한 파일 경로
+    const audioFilePath = req.file.path; 
    
     try {
-
-
         const pronAssessmentParamsJson = {
             "ReferenceText": referenceText,
             "GradingSystem": "HundredMark",
@@ -126,7 +122,7 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
 
         const pronAssessmentParams = Buffer.from(JSON.stringify(pronAssessmentParamsJson), 'utf-8').toString('base64');
         const audioStream = fs.createReadStream(audioFilePath);
-        // 요청 설정
+       
         const response = await axios({
             method: 'POST',
             url: `https://${region}.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-us`,
@@ -136,12 +132,11 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
                 'Pronunciation-Assessment': pronAssessmentParams,
                 'Content-Type': 'audio/wav'
             },
-            data: audioStream, // 오디오 파일 스트림 전송
+            data: audioStream, 
             maxContentLength: Infinity,
             maxBodyLength: Infinity
         });
 
-        // 응답 처리
         const evaluationResult  = response.data.NBest[0];
         console.log(evaluationResult);
         const result = {
@@ -151,7 +146,7 @@ router.post('/evaluation', upload.single('audioFile'), async (req, res) => {
             PronScore: evaluationResult.PronScore
         }
         console.log("3");
-        res.json(result); // 결과를 클라이언트로 전송
+        res.json(result);
 
     } catch (error) {
         console.error('Error in fetching pronunciation assessment:', error.response ? error.response.data : error.message);
