@@ -198,11 +198,8 @@ router.post('/feedback', async (req, res) => {
         `
 
         const feedbackResponse = await getChatResponse(prompt);
-        
-        // feedback 파싱은 한 번만 호출되도록 최적화
         const feedback = parseFeedback(feedbackResponse);
         
-        // 응답을 한 번만 보냄
         res.send({
             result: feedback.checking,
             description: feedback.description,
@@ -212,7 +209,6 @@ router.post('/feedback', async (req, res) => {
         });
     } catch (error) {
         console.error("Error:", error);
-        // 이미 응답이 전송되지 않은 경우에만 에러 응답을 보냄
         if (!res.headersSent) {
             res.status(500).send({ error: 'Server error', message: error.message });
         }
@@ -230,15 +226,13 @@ const parseFeedback = (text) => {
         correctAnswer : '',
         sentence: ''
     };
-  
-    // 정규식을 사용하여 각 항목을 파싱, 단어 사이의 공백을 유연하게 처리
+
     const checkingMatch = text.match(/정답\s*여부\s*:\s*(.*)/);
     const descriptionMatch= text.match(/피드백\s*:\s*(.*)/);
     const exampleMatch = text.match(/유사\s*표현\s*제안\s*:\s*(.*)/);
     const correctAnswerMatch = text.match(/모범\s*답안\s*:\s*(.*)/);
     const sentenceMatch = text.match(/원본\s*문장\s*:\s*(.*)/);
 
-    // 파싱된 내용을 feedback 객체에 저장
     if (checkingMatch) feedback.checking = checkingMatch[1].trim();
     if (descriptionMatch) feedback.description = descriptionMatch[1].trim();
     if (exampleMatch) feedback.example = exampleMatch[1].trim();
@@ -265,7 +259,6 @@ router.post('/captions', async (req, res) => {
 스크립트: ${captions}
 `;
 
-        // OpenAI API에 요청하여 응답을 받음 (openai service)
         let fixedcaption = await getChatResponse(prompt);
         fixedcaption = fixedcaption.replace(/수정된|스크립트|:/g, "").trim();
         
