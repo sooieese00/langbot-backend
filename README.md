@@ -47,6 +47,7 @@ LangBot은 원하는 **유튜브 영상**으로 영어 `표현 학습`, `퀴즈`
    - 학습 표현이 해당된 유튜브 영상 구간이 자동으로 재생됩니다
      
  ![study](./img/study-page.png)
+  ![study](./img/study.gif)
 
 <br>
 
